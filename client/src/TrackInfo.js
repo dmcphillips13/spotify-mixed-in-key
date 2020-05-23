@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import "./App.css";
 import Spotify from "spotify-web-api-js";
+import { Link } from "react-router-dom";
 
 const spotifyWebApi = new Spotify();
 
@@ -12,6 +13,7 @@ class TrackInfo extends Component {
       key: undefined,
       energy: undefined,
       danceability: undefined,
+      chosenPlaylistTracks: [],
     };
   }
 
@@ -63,12 +65,19 @@ class TrackInfo extends Component {
       key: camelotKey,
       energy: audioFeatures.energy,
       danceability: audioFeatures.danceability,
+      chosenPlaylistTracks: this.props.chosenPlaylistTracks,
     });
   }
 
   render() {
-    const { tempo, key, energy, danceability } = this.state;
-    const { id, name, artists } = this.props;
+    const {
+      tempo,
+      key,
+      energy,
+      danceability,
+      chosenPlaylistTracks,
+    } = this.state;
+    const { id, name, artists, location } = this.props;
     if (!tempo || !key || !energy) {
       return (
         <tr>
@@ -79,7 +88,14 @@ class TrackInfo extends Component {
     return (
       <tr>
         <td>
-          <button>Select</button>
+          <Link
+            to={{
+              pathname: `${location.pathname}/${id}`,
+              state: { tempo, key, energy, danceability, chosenPlaylistTracks },
+            }}
+          >
+            Select
+          </Link>
         </td>
         <td>{name}</td>
         <td>

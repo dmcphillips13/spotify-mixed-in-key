@@ -17,26 +17,22 @@ class Playlist extends Component {
 
   async componentDidMount() {
     const playlists = await spotifyWebApi.getUserPlaylists();
+
     const chosenPlaylist = await playlists.items.find(
       (playlist) => playlist.name === this.state.chosenPlaylistTitle
     );
     await this.setState({ chosenPlaylist });
+
     const tracksResponse = await spotifyWebApi.getPlaylistTracks(
       this.state.chosenPlaylist.id
     );
-    await this.setState({ chosenPlaylistTracks: tracksResponse.items });
-  }
 
-  async fetchAudioFeatures(trackObject) {
-    const audioFeatures = await spotifyWebApi.getAudioFeaturesForTrack(
-      trackObject.track.id
-    );
-    trackObject.track.trackAudioFeatures = audioFeatures;
+    this.setState({ chosenPlaylistTracks: tracksResponse.items });
   }
 
   render() {
     const { chosenPlaylistTitle, chosenPlaylistTracks } = this.state;
-
+    console.log(chosenPlaylistTracks);
     return (
       <div className="App">
         <h1>{chosenPlaylistTitle}</h1>
@@ -55,7 +51,12 @@ class Playlist extends Component {
           <tbody>
             {chosenPlaylistTracks.map((trackObject) => {
               return (
-                <TrackInfo {...trackObject.track} key={trackObject.track.id} />
+                <TrackInfo
+                  chosenPlaylistTracks={this.state.chosenPlaylistTracks}
+                  location={this.props.location}
+                  {...trackObject.track}
+                  key={trackObject.track.id}
+                />
               );
             })}
           </tbody>

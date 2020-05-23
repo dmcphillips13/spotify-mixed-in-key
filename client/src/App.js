@@ -3,18 +3,23 @@ import "./App.css";
 import { Route, Switch, HashRouter } from "react-router-dom";
 import Spotify from "spotify-web-api-js";
 import Playlist from "./Playlist";
+import SingleTrack from "./SingleTrack";
 
 const spotifyWebApi = new Spotify();
 
 class App extends Component {
   constructor() {
     super();
-    const params = this.getHashParams();
     this.state = {
-      loggedIn: params.access_token ? true : false,
+      loggedIn: false,
     };
+  }
+
+  async componentDidMount() {
+    const params = await this.getHashParams();
     if (params.access_token) {
-      spotifyWebApi.setAccessToken(params.access_token);
+      await spotifyWebApi.setAccessToken(params.access_token);
+      await this.setState({ loggedIn: true });
     }
   }
 
@@ -43,7 +48,8 @@ class App extends Component {
     return (
       <HashRouter>
         <Switch>
-          <Route path="/" component={Playlist} />
+          <Route exact path="/:accessToken" component={Playlist} />
+          <Route exact path="/:accessToken/:id" component={SingleTrack} />
         </Switch>
       </HashRouter>
     );
