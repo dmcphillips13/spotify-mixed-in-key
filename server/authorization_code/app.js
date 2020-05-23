@@ -12,6 +12,7 @@ var request = require("request"); // "Request" library
 var cors = require("cors");
 var querystring = require("querystring");
 var cookieParser = require("cookie-parser");
+require("dotenv").config();
 
 var client_id = "d9264bdfa19747a08feedab2b2caf50c"; // Your client id
 var client_secret = "a3b2223c3e044f3c85a57ff47e529dc3"; // Your secret
