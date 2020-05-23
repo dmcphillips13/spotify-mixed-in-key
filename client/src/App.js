@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import "./App.css";
+import { Route, Switch, HashRouter } from "react-router-dom";
 import Spotify from "spotify-web-api-js";
 import Playlist from "./Playlist";
 
@@ -39,7 +40,13 @@ class App extends Component {
         </div>
       );
     }
-    return <Playlist />;
+    return (
+      <HashRouter>
+        <Switch>
+          <Route path="/" component={Playlist} />
+        </Switch>
+      </HashRouter>
+    );
   }
 }
 

@@ -20,8 +20,6 @@ class TrackInfo extends Component {
       this.props.id
     );
 
-    console.log(audioFeatures);
-
     let camelotKey = audioFeatures.key;
     if (audioFeatures.key === 0) {
       audioFeatures.mode === 1 ? (camelotKey = "8B") : (camelotKey = "5A");
