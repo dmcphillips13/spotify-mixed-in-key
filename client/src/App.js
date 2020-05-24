@@ -1,9 +1,11 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 import "./App.css";
 import { Route, Switch, HashRouter } from "react-router-dom";
 import Spotify from "spotify-web-api-js";
 import Playlist from "./Playlist";
 import SingleTrack from "./SingleTrack";
+import { loadPlaylists } from "./store";
 
 const spotifyWebApi = new Spotify();
 
@@ -21,6 +23,7 @@ class App extends Component {
       await spotifyWebApi.setAccessToken(params.access_token);
       await this.setState({ loggedIn: true });
     }
+    await this.props.loadInitialData();
   }
 
   getHashParams() {
@@ -56,4 +59,20 @@ class App extends Component {
   }
 }
 
-export default App;
+const mapStateToProps = ({ playlists, playlistTracks, trackAudioFeatures }) => {
+  return {
+    playlists,
+    playlistTracks,
+    trackAudioFeatures,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    loadInitialData: () => {
+      dispatch(loadPlaylists());
+    },
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import "./App.css";
 import Spotify from "spotify-web-api-js";
+import TrackInfo from "./TrackInfo";
 
 const spotifyWebApi = new Spotify();
 
@@ -28,9 +29,9 @@ class SingleTrack extends Component {
       chosenPlaylistTracks,
     } = this.props.location.state;
 
-    await chosenPlaylistTracks.map((trackObject) => {
-      this.fetchAudioFeatures(trackObject);
-    });
+    // await chosenPlaylistTracks.map((trackObject) => {
+    //   this.fetchAudioFeatures(trackObject);
+    // });
 
     this.setState({
       name: track.name,
@@ -43,13 +44,13 @@ class SingleTrack extends Component {
     });
   }
 
-  async fetchAudioFeatures(trackObject) {
-    const audioFeatures = await spotifyWebApi.getAudioFeaturesForTrack(
-      trackObject.track.id
-    );
+  // async fetchAudioFeatures(trackObject) {
+  //   const audioFeatures = await spotifyWebApi.getAudioFeaturesForTrack(
+  //     trackObject.track.id
+  //   );
 
-    trackObject.track.audioFeatures = audioFeatures;
-  }
+  //   trackObject.track.audioFeatures = audioFeatures;
+  // }
 
   render() {
     const {
@@ -61,7 +62,6 @@ class SingleTrack extends Component {
       danceability,
       chosenPlaylistTracks,
     } = this.state;
-    console.log(chosenPlaylistTracks);
     if (
       !name ||
       !artists ||
@@ -73,6 +73,7 @@ class SingleTrack extends Component {
     ) {
       return <h1>Loading...</h1>;
     }
+    console.log(chosenPlaylistTracks);
     return (
       <div>
         <h1>{name}</h1>
@@ -85,6 +86,21 @@ class SingleTrack extends Component {
         <h3>Key: {key}</h3>
         <h3>Energy: {parseInt(energy * 10)}</h3>
         <h3>Danceability: {parseInt(danceability * 10)}</h3>
+        {chosenPlaylistTracks
+          .filter(
+            (trackObject) =>
+              trackObject.track.camelotKey === key &&
+              trackObject.track.name !== name
+          )
+          .map((trackObject) => (
+            // <h5 key={trackObject.id}>{trackObject.track.name}</h5>
+            <TrackInfo
+              chosenPlaylistTracks={this.state.chosenPlaylistTracks}
+              location={this.props.location}
+              {...trackObject.track}
+              key={trackObject.track.id}
+            />
+          ))}
       </div>
     );
   }
