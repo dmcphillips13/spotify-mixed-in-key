@@ -5,25 +5,41 @@ import { Route, Switch, HashRouter } from "react-router-dom";
 import Spotify from "spotify-web-api-js";
 import Playlist from "./Playlist";
 import SingleTrack from "./SingleTrack";
-import { loadPlaylists } from "./store";
+import {
+  loadPlaylists,
+  loadPlaylistTracks,
+  loadTracksAudioFeatures,
+} from "./store";
 
 const spotifyWebApi = new Spotify();
 
 class App extends Component {
   constructor() {
     super();
+    const params = this.getHashParams();
     this.state = {
-      loggedIn: false,
+      loggedIn: params.access_token ? true : false,
+      chosenPlaylistTitle: "DJ App Test",
     };
+    if (params.access_token) {
+      spotifyWebApi.setAccessToken(params.access_token);
+    }
   }
 
   async componentDidMount() {
-    const params = await this.getHashParams();
-    if (params.access_token) {
-      await spotifyWebApi.setAccessToken(params.access_token);
-      await this.setState({ loggedIn: true });
-    }
-    await this.props.loadInitialData();
+    await this.props.getPlaylists();
+
+    const chosenPlaylist = await this.props.playlists.items.find(
+      (playlist) => playlist.name === this.state.chosenPlaylistTitle
+    );
+
+    await this.props.getPlaylistTracks(chosenPlaylist.id);
+
+    const tracksIds = await this.props.playlistTracks.map((trackObject) => {
+      return trackObject.track.id;
+    });
+
+    await this.props.getTracksAudioFeatures(tracksIds);
   }
 
   getHashParams() {
@@ -39,6 +55,7 @@ class App extends Component {
 
   render() {
     const { loggedIn } = this.state;
+    // const { playlists, playlistTracks, tracksAudioFeatures } = this.props;
     if (!loggedIn) {
       return (
         <div>
@@ -59,19 +76,24 @@ class App extends Component {
   }
 }
 
-const mapStateToProps = ({ playlists, playlistTracks, trackAudioFeatures }) => {
+const mapStateToProps = ({
+  playlists,
+  playlistTracks,
+  tracksAudioFeatures,
+}) => {
   return {
     playlists,
     playlistTracks,
-    trackAudioFeatures,
+    tracksAudioFeatures,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    loadInitialData: () => {
-      dispatch(loadPlaylists());
-    },
+    getPlaylists: () => dispatch(loadPlaylists()),
+    getPlaylistTracks: (id) => dispatch(loadPlaylistTracks(id)),
+    getTracksAudioFeatures: (tracksIds) =>
+      dispatch(loadTracksAudioFeatures(tracksIds)),
   };
 };
 

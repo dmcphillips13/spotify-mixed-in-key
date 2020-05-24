@@ -8,7 +8,8 @@ const spotifyWebApi = new Spotify();
 // ACTIONS
 const LOAD_PLAYLISTS = "LOAD_PLAYLISTS";
 const LOAD_PLAYLIST_TRACKS = "LOAD_PLAYLIST_TRACKS";
-const LOAD_TRACK_AUDIO_FEATURES = "LOAD_TRACK_AUDIO_FEATURES";
+const LOAD_SELECTED_TRACK = "LOAD_SELECTED_TRACK";
+const LOAD_TRACKS_AUDIO_FEATURES = "LOAD_TRACKS_AUDIO_FEATURES";
 
 // ACTION CREATORS
 const _loadPlaylists = (playlists) => ({ type: LOAD_PLAYLISTS, playlists });
@@ -16,9 +17,13 @@ const _loadPlaylistTracks = (playlistTracks) => ({
   type: LOAD_PLAYLIST_TRACKS,
   playlistTracks,
 });
-const _loadTrackAudioFeatures = (trackAudioFeatures) => ({
-  type: LOAD_TRACK_AUDIO_FEATURES,
-  trackAudioFeatures,
+const _loadSelectedTrack = (selectedTrack) => ({
+  type: LOAD_SELECTED_TRACK,
+  selectedTrack,
+});
+const _loadTracksAudioFeatures = (tracksAudioFeatures) => ({
+  type: LOAD_TRACKS_AUDIO_FEATURES,
+  tracksAudioFeatures,
 });
 
 // THUNKS
@@ -36,10 +41,17 @@ const loadPlaylistTracks = (id) => {
   };
 };
 
-const loadTrackAudioFeatures = (id) => {
+const loadSelectedTrack = (id) => {
   return async (dispatch) => {
-    const response = await spotifyWebApi.getAudioFeaturesForTrack(id);
-    dispatch(_loadTrackAudioFeatures(response));
+    const response = await spotifyWebApi.getTrack(id);
+    dispatch(_loadSelectedTrack(response));
+  };
+};
+
+const loadTracksAudioFeatures = (tracksIds) => {
+  return async (dispatch) => {
+    const response = await spotifyWebApi.getAudioFeaturesForTracks(tracksIds);
+    dispatch(_loadTracksAudioFeatures(response.audio_features));
   };
 };
 
@@ -64,10 +76,20 @@ const playlistTracksReducer = (state = [], action) => {
   }
 };
 
-const trackAudioFeaturesReducer = (state = {}, action) => {
+const selectedTrackReducer = (state = {}, action) => {
   switch (action.type) {
-    case LOAD_TRACK_AUDIO_FEATURES:
-      return action.trackAudioFeatures;
+    case LOAD_SELECTED_TRACK:
+      return action.selectedTrack;
+
+    default:
+      return state;
+  }
+};
+
+const tracksAudioFeaturesReducer = (state = {}, action) => {
+  switch (action.type) {
+    case LOAD_TRACKS_AUDIO_FEATURES:
+      return action.tracksAudioFeatures;
 
     default:
       return state;
@@ -77,7 +99,8 @@ const trackAudioFeaturesReducer = (state = {}, action) => {
 const reducer = combineReducers({
   playlists: playlistsReducer,
   playlistTracks: playlistTracksReducer,
-  trackAudioFeatures: trackAudioFeaturesReducer,
+  selectedTrack: selectedTrackReducer,
+  tracksAudioFeatures: tracksAudioFeaturesReducer,
 });
 
 const store = createStore(
@@ -87,4 +110,9 @@ const store = createStore(
 
 export default store;
 
-export { loadPlaylists, loadPlaylistTracks, loadTrackAudioFeatures };
+export {
+  loadPlaylists,
+  loadPlaylistTracks,
+  loadSelectedTrack,
+  loadTracksAudioFeatures,
+};

@@ -1,109 +1,142 @@
 import React, { Component } from "react";
 import "./App.css";
-import Spotify from "spotify-web-api-js";
 import TrackInfo from "./TrackInfo";
-
-const spotifyWebApi = new Spotify();
+import { connect } from "react-redux";
+import { loadSelectedTrack } from "./store";
 
 class SingleTrack extends Component {
   constructor() {
     super();
-    this.state = {
-      name: "",
-      artists: [],
-      tempo: undefined,
-      key: undefined,
-      energy: undefined,
-      danceability: undefined,
-      chosenPlaylistTracks: [],
-    };
   }
 
-  async componentDidMount() {
-    const track = await spotifyWebApi.getTrack(this.props.match.params.id);
-    const {
-      tempo,
-      key,
-      energy,
-      danceability,
-      chosenPlaylistTracks,
-    } = this.props.location.state;
-
-    // await chosenPlaylistTracks.map((trackObject) => {
-    //   this.fetchAudioFeatures(trackObject);
-    // });
-
-    this.setState({
-      name: track.name,
-      artists: track.artists,
-      tempo,
-      key,
-      energy,
-      danceability,
-      chosenPlaylistTracks,
-    });
+  componentDidMount() {
+    const id = this.props.match.params.id;
+    this.props.getSelectedTrack(id);
   }
 
-  // async fetchAudioFeatures(trackObject) {
-  //   const audioFeatures = await spotifyWebApi.getAudioFeaturesForTrack(
-  //     trackObject.track.id
-  //   );
-
-  //   trackObject.track.audioFeatures = audioFeatures;
-  // }
+  componentDidUpdate(prevProps) {
+    if (this.props.match.params.id !== prevProps.match.params.id) {
+      const id = this.props.match.params.id;
+      this.props.getSelectedTrack(id);
+    }
+  }
 
   render() {
-    const {
-      name,
-      artists,
-      tempo,
-      key,
-      energy,
-      danceability,
-      chosenPlaylistTracks,
-    } = this.state;
-    if (
-      !name ||
-      !artists ||
-      !tempo ||
-      !key ||
-      !energy ||
-      !danceability ||
-      !chosenPlaylistTracks
-    ) {
+    const { selectedTrack, tracksAudioFeatures, playlistTracks } = this.props;
+    if (!selectedTrack.artists) {
       return <h1>Loading...</h1>;
     }
-    console.log(chosenPlaylistTracks);
+    const audioFeatures = tracksAudioFeatures.find(
+      (tAF) => tAF.id === selectedTrack.id
+    );
+    let camelotKey = audioFeatures.key;
+    if (audioFeatures.key === 0) {
+      audioFeatures.mode === 1 ? (camelotKey = "8B") : (camelotKey = "5A");
+    }
+    if (audioFeatures.key === 1) {
+      audioFeatures.mode === 1 ? (camelotKey = "3B") : (camelotKey = "12A");
+    }
+    if (audioFeatures.key === 2) {
+      audioFeatures.mode === 1 ? (camelotKey = "10B") : (camelotKey = "7A");
+    }
+    if (audioFeatures.key === 3) {
+      audioFeatures.mode === 1 ? (camelotKey = "5B") : (camelotKey = "2A");
+    }
+    if (audioFeatures.key === 4) {
+      audioFeatures.mode === 1 ? (camelotKey = "12B") : (camelotKey = "9A");
+    }
+    if (audioFeatures.key === 5) {
+      audioFeatures.mode === 1 ? (camelotKey = "7B") : (camelotKey = "4A");
+    }
+    if (audioFeatures.key === 6) {
+      audioFeatures.mode === 1 ? (camelotKey = "2B") : (camelotKey = "11A");
+    }
+    if (audioFeatures.key === 7) {
+      audioFeatures.mode === 1 ? (camelotKey = "9B") : (camelotKey = "6A");
+    }
+    if (audioFeatures.key === 8) {
+      audioFeatures.mode === 1 ? (camelotKey = "4B") : (camelotKey = "1A");
+    }
+    if (audioFeatures.key === 9) {
+      audioFeatures.mode === 1 ? (camelotKey = "11B") : (camelotKey = "8A");
+    }
+    if (audioFeatures.key === 10) {
+      audioFeatures.mode === 1 ? (camelotKey = "6B") : (camelotKey = "3A");
+    }
+    if (audioFeatures.key === 11) {
+      audioFeatures.mode === 1 ? (camelotKey = "1B") : (camelotKey = "10A");
+    }
     return (
       <div>
-        <h1>{name}</h1>
+        <h1>{selectedTrack.name}</h1>
         <h2>
-          {artists.map((artist, idx) =>
-            idx === artists.length - 1 ? `${artist.name}` : `${artist.name}, `
+          {selectedTrack.artists.map((artist, idx) =>
+            idx === selectedTrack.artists.length - 1
+              ? `${artist.name}`
+              : `${artist.name}, `
           )}
         </h2>
-        <h3>Tempo: {parseInt(tempo)}</h3>
-        <h3>Key: {key}</h3>
-        <h3>Energy: {parseInt(energy * 10)}</h3>
-        <h3>Danceability: {parseInt(danceability * 10)}</h3>
-        {chosenPlaylistTracks
-          .filter(
-            (trackObject) =>
-              trackObject.track.camelotKey === key &&
-              trackObject.track.name !== name
-          )
-          .map((trackObject) => (
-            // <h5 key={trackObject.id}>{trackObject.track.name}</h5>
-            <TrackInfo
-              chosenPlaylistTracks={this.state.chosenPlaylistTracks}
-              location={this.props.location}
-              {...trackObject.track}
-              key={trackObject.track.id}
-            />
-          ))}
+        <h3>BPM: {parseInt(audioFeatures.tempo)}</h3>
+        <h3>Key: {camelotKey}</h3>
+        <h3>Energy: {parseInt(audioFeatures.energy * 10)}</h3>
+        <h3>Danceability: {parseInt(audioFeatures.danceability * 10)}</h3>
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th>Title</th>
+              <th>Artist</th>
+              <th>BPM</th>
+              <th>Key</th>
+              <th>Energy</th>
+              <th>Danceability</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tracksAudioFeatures
+              .filter(
+                (tAF) =>
+                  tAF.key === audioFeatures.key &&
+                  tAF.mode === audioFeatures.mode &&
+                  tAF.id !== selectedTrack.id
+              )
+              .map((tAF) =>
+                playlistTracks.find(
+                  (playlistTrack) => playlistTrack.track.id === tAF.id
+                )
+              )
+              .map((trackObject) => {
+                return (
+                  <TrackInfo
+                    key={trackObject.track.id}
+                    {...this.props}
+                    {...trackObject.track}
+                  />
+                );
+              })}
+          </tbody>
+        </table>
       </div>
     );
   }
 }
 
-export default SingleTrack;
+const mapStateToProps = ({
+  playlistTracks,
+  tracksAudioFeatures,
+  selectedTrack,
+}) => {
+  return {
+    playlistTracks,
+    tracksAudioFeatures,
+    selectedTrack,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getSelectedTrack: (id) => dispatch(loadSelectedTrack(id)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(SingleTrack);
