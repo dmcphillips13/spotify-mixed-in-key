@@ -80,6 +80,7 @@ class SingleTrack extends Component {
         <h3>Key: {camelotKey}</h3>
         <h3>Energy: {parseInt(audioFeatures.energy * 10)}</h3>
         <h3>Danceability: {parseInt(audioFeatures.danceability * 10)}</h3>
+        <h3>Same Key</h3>
         <table>
           <thead>
             <tr>
@@ -100,6 +101,67 @@ class SingleTrack extends Component {
                   tAF.mode === audioFeatures.mode &&
                   tAF.id !== selectedTrack.id
               )
+              .map((tAF) =>
+                playlistTracks.find(
+                  (playlistTrack) => playlistTrack.track.id === tAF.id
+                )
+              )
+              .map((trackObject) => {
+                return (
+                  <TrackInfo
+                    key={trackObject.track.id}
+                    {...this.props}
+                    {...trackObject.track}
+                  />
+                );
+              })}
+          </tbody>
+        </table>
+        <h3>Up, Down, Around</h3>
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th>Title</th>
+              <th>Artist</th>
+              <th>BPM</th>
+              <th>Key</th>
+              <th>Energy</th>
+              <th>Danceability</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tracksAudioFeatures
+              .filter((tAF) => {
+                if (
+                  (audioFeatures.key - tAF.key > 0 &&
+                    audioFeatures.key - tAF.key === 5 &&
+                    audioFeatures.mode === tAF.mode) ||
+                  (audioFeatures.key - tAF.key > 0 &&
+                    audioFeatures.key - tAF.key === 7 &&
+                    audioFeatures.mode === tAF.mode)
+                ) {
+                  return tAF;
+                } else if (
+                  (audioFeatures.key - tAF.key < 0 &&
+                    12 - Math.abs(audioFeatures.key - tAF.key) === 5 &&
+                    audioFeatures.mode === tAF.mode) ||
+                  (audioFeatures.key - tAF.key < 0 &&
+                    12 - Math.abs(audioFeatures.key - tAF.key) === 7 &&
+                    audioFeatures.mode === tAF.mode)
+                ) {
+                  return tAF;
+                } else if (
+                  (audioFeatures.key - tAF.key > 0 &&
+                    audioFeatures.key - tAF.key === 9 &&
+                    audioFeatures.mode !== tAF.mode) ||
+                  (audioFeatures.key - tAF.key < 0 &&
+                    12 - Math.abs(audioFeatures.key - tAF.key) === 3 &&
+                    audioFeatures.mode !== tAF.mode)
+                ) {
+                  return tAF;
+                }
+              })
               .map((tAF) =>
                 playlistTracks.find(
                   (playlistTrack) => playlistTrack.track.id === tAF.id
