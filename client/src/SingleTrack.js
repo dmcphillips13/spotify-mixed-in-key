@@ -6,10 +6,6 @@ import { loadSelectedTrack } from "./store";
 import { Link } from "react-router-dom";
 
 class SingleTrack extends Component {
-  constructor() {
-    super();
-  }
-
   componentDidMount() {
     const id = this.props.match.params.id;
     this.props.getSelectedTrack(id);

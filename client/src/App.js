@@ -24,6 +24,7 @@ class App extends Component {
     if (params.access_token) {
       spotifyWebApi.setAccessToken(params.access_token);
     }
+    this.onSubmit = this.onSubmit.bind(this);
   }
 
   async componentDidMount() {
@@ -42,6 +43,22 @@ class App extends Component {
     await this.props.getTracksAudioFeatures(tracksIds);
   }
 
+  // async componentDidUpdate(prevState) {
+  //   if (this.state.chosenPlaylistTitle !== prevState.chosenPlaylistTitle) {
+  //     const chosenPlaylist = await this.props.playlists.items.find(
+  //       (playlist) => playlist.name === this.state.chosenPlaylistTitle
+  //     );
+
+  //     await this.props.getPlaylistTracks(chosenPlaylist.id);
+
+  //     const tracksIds = await this.props.playlistTracks.map((trackObject) => {
+  //       return trackObject.track.id;
+  //     });
+
+  //     await this.props.getTracksAudioFeatures(tracksIds);
+  //   }
+  // }
+
   getHashParams() {
     var hashParams = {};
     var e,
@@ -53,9 +70,29 @@ class App extends Component {
     return hashParams;
   }
 
+  async onSubmit(event) {
+    event.preventDefault();
+    try {
+      const chosenPlaylist = await this.props.playlists.items.find(
+        (playlist) => playlist.name === this.state.chosenPlaylistTitle
+      );
+
+      await this.props.getPlaylistTracks(chosenPlaylist.id);
+
+      const tracksIds = await this.props.playlistTracks.map((trackObject) => {
+        return trackObject.track.id;
+      });
+
+      await this.props.getTracksAudioFeatures(tracksIds);
+    } catch (exception) {
+      console.log(exception);
+    }
+  }
+
   render() {
-    const { loggedIn } = this.state;
-    // const { playlists, playlistTracks, tracksAudioFeatures } = this.props;
+    const { onSubmit } = this;
+    const { loggedIn, chosenPlaylistTitle } = this.state;
+    const { playlists } = this.props;
     if (!loggedIn) {
       return (
         <div>
@@ -65,13 +102,31 @@ class App extends Component {
         </div>
       );
     }
+    if (!playlists.items) {
+      return <h1>Loading...</h1>;
+    }
     return (
-      <HashRouter>
-        <Switch>
-          <Route exact path="/:accessToken" component={Playlist} />
-          <Route exact path="/:accessToken/:id" component={SingleTrack} />
-        </Switch>
-      </HashRouter>
+      <form onSubmit={onSubmit}>
+        <select
+          value={chosenPlaylistTitle}
+          onChange={(event) =>
+            this.setState({ chosenPlaylistTitle: event.target.value })
+          }
+        >
+          {playlists.items.map((playlist) => (
+            <option value={playlist.name} key={playlist.id}>
+              {playlist.name}
+            </option>
+          ))}
+        </select>
+        <button>Select</button>
+        <HashRouter>
+          <Switch>
+            <Route exact path="/:accessToken" component={Playlist} />
+            <Route exact path="/:accessToken/:id" component={SingleTrack} />
+          </Switch>
+        </HashRouter>
+      </form>
     );
   }
 }

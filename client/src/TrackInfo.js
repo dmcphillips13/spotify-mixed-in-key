@@ -4,12 +4,8 @@ import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 
 class TrackInfo extends Component {
-  constructor() {
-    super();
-  }
-
   render() {
-    const { id, name, artists, location, tracksAudioFeatures } = this.props;
+    const { id, name, artists, tracksAudioFeatures } = this.props;
     if (!tracksAudioFeatures.length) {
       return (
         <tr>
