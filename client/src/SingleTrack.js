@@ -3,6 +3,7 @@ import "./App.css";
 import TrackInfo from "./TrackInfo";
 import { connect } from "react-redux";
 import { loadSelectedTrack } from "./store";
+import { Link } from "react-router-dom";
 
 class SingleTrack extends Component {
   constructor() {
@@ -66,8 +67,10 @@ class SingleTrack extends Component {
     if (audioFeatures.key === 11) {
       audioFeatures.mode === 1 ? (camelotKey = "1B") : (camelotKey = "10A");
     }
+
     return (
       <div>
+        <Link to={`/${this.props.match.params.accessToken}`}>Home</Link>
         <h1>{selectedTrack.name}</h1>
         <h2>
           {selectedTrack.artists.map((artist, idx) =>
@@ -152,12 +155,119 @@ class SingleTrack extends Component {
                 ) {
                   return tAF;
                 } else if (
-                  (audioFeatures.key - tAF.key > 0 &&
-                    audioFeatures.key - tAF.key === 9 &&
+                  (audioFeatures.mode === 1 &&
+                    audioFeatures.key - tAF.key > 0 &&
+                    audioFeatures.key - tAF.key === 3 &&
                     audioFeatures.mode !== tAF.mode) ||
-                  (audioFeatures.key - tAF.key < 0 &&
+                  (audioFeatures.mode === 1 &&
+                    audioFeatures.key - tAF.key < 0 &&
                     12 - Math.abs(audioFeatures.key - tAF.key) === 3 &&
                     audioFeatures.mode !== tAF.mode)
+                ) {
+                  return tAF;
+                } else if (
+                  (audioFeatures.mode === 0 &&
+                    audioFeatures.key - tAF.key > 0 &&
+                    audioFeatures.key - tAF.key === 9 &&
+                    audioFeatures.mode !== tAF.mode) ||
+                  (audioFeatures.mode === 0 &&
+                    audioFeatures.key - tAF.key < 0 &&
+                    12 - Math.abs(audioFeatures.key - tAF.key) === 9 &&
+                    audioFeatures.mode !== tAF.mode)
+                ) {
+                  return tAF;
+                }
+              })
+              .map((tAF) =>
+                playlistTracks.find(
+                  (playlistTrack) => playlistTrack.track.id === tAF.id
+                )
+              )
+              .map((trackObject) => {
+                return (
+                  <TrackInfo
+                    key={trackObject.track.id}
+                    {...this.props}
+                    {...trackObject.track}
+                  />
+                );
+              })}
+          </tbody>
+        </table>
+        <h3>Energy Boost</h3>
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th>Title</th>
+              <th>Artist</th>
+              <th>BPM</th>
+              <th>Key</th>
+              <th>Energy</th>
+              <th>Danceability</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tracksAudioFeatures
+              .filter((tAF) => {
+                if (
+                  audioFeatures.key - tAF.key > 0 &&
+                  audioFeatures.key - tAF.key === 10 &&
+                  audioFeatures.mode === tAF.mode
+                ) {
+                  return tAF;
+                } else if (
+                  audioFeatures.key - tAF.key < 0 &&
+                  12 - Math.abs(audioFeatures.key - tAF.key) === 10 &&
+                  audioFeatures.mode === tAF.mode
+                ) {
+                  return tAF;
+                }
+              })
+              .map((tAF) =>
+                playlistTracks.find(
+                  (playlistTrack) => playlistTrack.track.id === tAF.id
+                )
+              )
+              .map((trackObject) => {
+                return (
+                  <TrackInfo
+                    key={trackObject.track.id}
+                    {...this.props}
+                    {...trackObject.track}
+                  />
+                );
+              })}
+          </tbody>
+        </table>
+        <h3>Skrillex Style</h3>
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th>Title</th>
+              <th>Artist</th>
+              <th>BPM</th>
+              <th>Key</th>
+              <th>Energy</th>
+              <th>Danceability</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tracksAudioFeatures
+              .filter((tAF) => {
+                if (
+                  audioFeatures.key - tAF.key > 0 &&
+                  audioFeatures.key - tAF.key === 11 &&
+                  audioFeatures.mode === tAF.mode &&
+                  audioFeatures.energy < tAF.energy
+                ) {
+                  return tAF;
+                } else if (
+                  audioFeatures.key - tAF.key < 0 &&
+                  12 - Math.abs(audioFeatures.key - tAF.key) === 11 &&
+                  audioFeatures.mode === tAF.mode &&
+                  audioFeatures.energy < tAF.energy
                 ) {
                   return tAF;
                 }

@@ -15,7 +15,7 @@ var cookieParser = require("cookie-parser");
 require("dotenv").config();
 
 var client_id = "d9264bdfa19747a08feedab2b2caf50c"; // Your client id
-var client_secret = "ADD_SECRET_KEY"; // Your secret
+var client_secret = "CLIENT_SECRET"; // Your secret
 var redirect_uri = "http://localhost:8888/callback"; // Your redirect uri
 
 /**
