@@ -37,7 +37,7 @@ class Playlist extends Component {
               return (
                 <TrackInfo
                   key={trackObject.track.id}
-                  {...this.props}
+                  match={this.props.match}
                   {...trackObject.track}
                 />
               );

@@ -41,3 +41,15 @@ div,
 button {
   margin: 15px;
 }
+
+table {
+  width: 100%;
+}
+
+th {
+  text-align: center;
+}
+
+td {
+  border-bottom: 1px black solid;
+}

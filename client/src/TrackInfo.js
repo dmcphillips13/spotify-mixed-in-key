@@ -74,4 +74,10 @@ class TrackInfo extends Component {
   }
 }
 
-export default connect(null)(TrackInfo);
+const mapStateToProps = ({ tracksAudioFeatures }) => {
+  return {
+    tracksAudioFeatures,
+  };
+};
+
+export default connect(mapStateToProps)(TrackInfo);

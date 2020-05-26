@@ -100,6 +100,12 @@ class SingleTrack extends Component {
                   tAF.mode === audioFeatures.mode &&
                   tAF.id !== selectedTrack.id
               )
+              .sort(function (a, b) {
+                return (
+                  Math.abs(audioFeatures.tempo - a.tempo) -
+                  Math.abs(audioFeatures.tempo - b.tempo)
+                );
+              })
               .map((tAF) =>
                 playlistTracks.find(
                   (playlistTrack) => playlistTrack.track.id === tAF.id
@@ -174,6 +180,12 @@ class SingleTrack extends Component {
                   return tAF;
                 }
               })
+              .sort(function (a, b) {
+                return (
+                  Math.abs(audioFeatures.tempo - a.tempo) -
+                  Math.abs(audioFeatures.tempo - b.tempo)
+                );
+              })
               .map((tAF) =>
                 playlistTracks.find(
                   (playlistTrack) => playlistTrack.track.id === tAF.id
@@ -190,7 +202,7 @@ class SingleTrack extends Component {
               })}
           </tbody>
         </table>
-        <h3>Energy Boost</h3>
+        <h3>Energy Boost (+2)</h3>
         <table>
           <thead>
             <tr>
@@ -220,6 +232,12 @@ class SingleTrack extends Component {
                   return tAF;
                 }
               })
+              .sort(function (a, b) {
+                return (
+                  Math.abs(audioFeatures.tempo - a.tempo) -
+                  Math.abs(audioFeatures.tempo - b.tempo)
+                );
+              })
               .map((tAF) =>
                 playlistTracks.find(
                   (playlistTrack) => playlistTrack.track.id === tAF.id
@@ -236,7 +254,7 @@ class SingleTrack extends Component {
               })}
           </tbody>
         </table>
-        <h3>Skrillex Style</h3>
+        <h3>Skrillex Style (-5, Higher Energy)</h3>
         <table>
           <thead>
             <tr>
@@ -267,6 +285,12 @@ class SingleTrack extends Component {
                 ) {
                   return tAF;
                 }
+              })
+              .sort(function (a, b) {
+                return (
+                  Math.abs(audioFeatures.tempo - a.tempo) -
+                  Math.abs(audioFeatures.tempo - b.tempo)
+                );
               })
               .map((tAF) =>
                 playlistTracks.find(
