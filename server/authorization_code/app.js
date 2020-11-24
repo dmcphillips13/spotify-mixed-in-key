@@ -14,8 +14,8 @@ var querystring = require("querystring");
 var cookieParser = require("cookie-parser");
 require("dotenv").config();
 
-var client_id = ""; // Your client id
-var client_secret = ""; // Your secret
+var client_id = process.env.SPOTIFY_CLIENT_ID; // Your client id
+var client_secret = process.env.SPOTIFY_CLIENT_SECRET; // Your secret
 var redirect_uri = "http://localhost:8888/callback"; // Your redirect uri
 
 /**
